@@ -1,0 +1,191 @@
+
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Tabela de Preços • Dropdown</title>
+<style>
+  :root {
+    --bg: #0b0c10;
+    --card: #11131a;
+    --muted: #6b7280;
+    --text: #e5e7eb;
+    --accent: #00d4ff;
+    --accent-2: #7c3aed;
+    --border: #23262f;
+    --ring: rgba(0,212,255,.25);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin:0; padding:0; background: var(--bg); color: var(--text); font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial; }
+  .wrap { max-width: 1100px; margin: 40px auto; padding: 0 16px; }
+  h1 { font-size: clamp(22px, 3vw, 34px); line-height: 1.15; margin:0 0 18px; }
+  .subtitle{ color: var(--muted); margin-bottom: 24px; }
+  .card { background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.00)), var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 18px; box-shadow: 0 10px 30px rgba(0,0,0,.35); }
+  .grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 16px; }
+  .col-4 { grid-column: span 12; }
+  @media(min-width: 820px){ .col-4{ grid-column: span 4; } }
+  .field label { display:block; font-size: 12px; color: var(--muted); margin: 0 0 6px 6px; letter-spacing:.02em; }
+  select { width:100%; padding:12px 14px; border-radius: 14px; background:#0e1016; color:var(--text); border:1px solid var(--border); outline: none; transition:.2s border-color,.2s box-shadow; appearance: none; }
+  select:focus { border-color: var(--accent); box-shadow: 0 0 0 6px var(--ring); }
+  .row { display:flex; gap: 12px; flex-wrap: wrap; }
+  .tag { padding: 6px 10px; border:1px solid var(--border); border-radius: 999px; font-size:12px; color:var(--muted); }
+  .price-table { width:100%; border-collapse: collapse; }
+  .price-table th, .price-table td { text-align:left; padding: 10px 12px; border-bottom:1px dashed var(--border); }
+  .price-table th { color: var(--muted); font-weight: 600; letter-spacing:.02em; }
+  .empty { color: var(--muted); padding: 12px; }
+  .pill { display:inline-flex; gap:8px; align-items:center; padding:8px 12px; border-radius: 999px; background: #0e1016; border:1px solid var(--border); }
+  .pill b { letter-spacing:.02em; }
+  .header { display:flex; align-items:flex-start; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+  .logo { font-weight: 700; letter-spacing:.08em; color: var(--accent); text-transform: uppercase; font-size:12px; border:1px solid var(--border); padding:6px 10px; border-radius:10px; }
+  .tabs { display:flex; gap:4px; padding:6px; background:#0e1016; border:1px solid var(--border); border-radius: 12px; }
+  .tab-btn { appearance:none; border:0; background:transparent; color:var(--muted); padding:8px 12px; border-radius:8px; cursor:pointer; }
+  .tab-btn[aria-selected="true"] { color:var(--text); background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,0)); }
+  .fade-in { animation: fade .18s ease-out; }
+  @keyframes fade { from{opacity:0; transform: translateY(4px);} to{opacity:1; transform:none;} }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="header">
+      <div class="logo">TABELA · PREÇOS</div>
+      <div class="row">
+        <span class="pill"><span>Atualizado</span><b>2025-10-20</b></span>
+      </div>
+    </div>
+    <h1>Consulta rápida de preços</h1>
+    <p class="subtitle">Escolha a categoria e os filtros para ver os preços imediatamente. Design consistente com os restantes ficheiros.</p>
+
+    <div class="card" id="app">
+      <div class="row" style="justify-content: space-between; margin-bottom: 12px;">
+        <div class="tabs" role="tablist" aria-label="Categoria">
+          <button class="tab-btn" role="tab" id="tab-bastidor" aria-selected="true" data-tab="bastidor">Bastidor</button>
+          <button class="tab-btn" role="tab" id="tab-vigas" aria-selected="false" data-tab="viga">Vigas</button>
+        </div>
+      </div>
+
+      <!-- BASTIDOR -->
+      <div id="panel-bastidor" class="fade-in" role="tabpanel" aria-labelledby="tab-bastidor">
+        <div class="grid" style="margin-top: 8px;">
+          <div class="col-4">
+            <div class="field">
+              <label>Perfil</label>
+              <select id="bastidor-perfil"></select>
+            </div>
+          </div>
+          <div class="col-4">
+            <div class="field">
+              <label>Altura</label>
+              <select id="bastidor-altura"></select>
+            </div>
+          </div>
+        </div>
+        <div style="margin-top: 12px;">
+          <table class="price-table" id="bastidor-tabela">
+            <thead><tr><th>Largura</th><th>Preço</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- VIGAS -->
+      <div id="panel-viga" role="tabpanel" aria-labelledby="tab-vigas" hidden>
+        <div class="grid" style="margin-top: 8px;">
+          <div class="col-4">
+            <div class="field">
+              <label>Tipo de viga</label>
+              <select id="viga-tipo"></select>
+            </div>
+          </div>
+        </div>
+        <div style="margin-top: 12px;">
+          <table class="price-table" id="viga-tabela">
+            <thead><tr><th>Comprimento</th><th>Preço</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+const DATA = {"bastidor": {"75": {"1000": {"600": 49.36, "700": 49.72, "800": 50.09, "900": 50.29, "1000": 50.78, "1100": 51.66, "1200": 52.67}, "1500": {"600": 52.66, "700": 52.9, "800": 53.4, "900": 53.59, "1000": 54.1, "1100": 54.98, "1200": 55.97}, "2000": {"600": 55.97, "700": 56.34, "800": 56.63, "900": 57.38, "1000": 58.37, "1100": 59.37, "1200": 59.96}, "2500": {"600": 61.17, "700": 61.39, "800": 61.62, "900": 62.36, "1000": 63.35, "1100": 64.35, "1200": 64.94}, "3000": {"600": 64.24, "700": 64.47, "800": 64.69, "900": 65.59, "1000": 67.73, "1100": 69.02, "1200": 71.16}, "3500": {"600": 71.4, "700": 71.63, "800": 71.86, "900": 72.84, "1000": 73.29, "1100": 75.43, "1200": 76.91}, "4000": {"600": 78.66, "700": 78.88, "800": 79.1, "900": 79.5, "1000": 80.55, "1100": 82.08, "1200": 84.03}, "4500": {"600": 84.9, "700": 85.11, "800": 85.56, "900": 86.7, "1000": 87.73, "1100": 90.08, "1200": 92.42}, "5000": {"600": 97.42, "700": 98.16, "800": 98.38, "900": 99.13, "1000": 99.87, "1100": 102.71, "1200": 105.34}, "5500": {"600": 112.95, "700": 113.32, "800": 113.54, "900": 117.77, "1000": 118.85, "1100": 121.84, "1200": 123.82}, "6000": {"600": 127.1, "700": 127.32, "800": 127.55, "900": 128.1, "1000": 130.62, "1100": 133.77, "1200": 138.09}, "6500": {"600": 138.1, "700": 138.29, "800": 139.56, "900": 140.16, "1000": 142.92, "1100": 146.36, "1200": 151.08}, "7000": {"600": 149.09, "700": 151.58, "800": 151.8, "900": 152.45, "1000": 155.46, "1100": 159.19, "1200": 164.33}, "7500": {"600": 160.4, "700": 162.08, "800": 164.26, "900": 164.97, "1000": 168.23, "1100": 172.28, "1200": 177.84}}, "100": {"1000": {"600": 54.66, "700": 54.88, "800": 55.1, "900": 55.32, "1000": 55.86, "1100": 56.83, "1200": 57.94}, "1500": {"600": 58.26, "700": 58.48, "800": 58.7, "900": 58.92, "1000": 59.46, "1100": 60.43, "1200": 61.53}, "2000": {"600": 61.86, "700": 62.07, "800": 62.3, "900": 63.12, "1000": 64.21, "1100": 65.3, "1200": 65.95}, "2500": {"600": 67.33, "700": 67.56, "800": 67.78, "900": 68.59, "1000": 69.69, "1100": 70.78, "1200": 71.43}, "3000": {"600": 70.72, "700": 70.94, "800": 71.16, "900": 72.14, "1000": 74.51, "1100": 75.92, "1200": 78.27}, "3500": {"600": 78.6, "700": 78.82, "800": 79.04, "900": 80.12, "1000": 80.62, "1100": 82.96, "1200": 84.6}, "4000": {"600": 86.57, "700": 86.79, "800": 87.01, "900": 87.45, "1000": 88.6, "1100": 90.28, "1200": 92.42}, "4500": {"600": 93.67, "700": 93.89, "800": 94.12, "900": 95.37, "1000": 96.5, "1100": 99.09, "1200": 101.66}, "5000": {"600": 107.77, "700": 107.99, "800": 108.22, "900": 109.04, "1000": 109.87, "1100": 112.97, "1200": 115.87}, "5500": {"600": 124.45, "700": 124.67, "800": 124.9, "900": 129.54, "1000": 130.75, "1100": 134.02, "1200": 136.2}, "6000": {"600": 139.86, "700": 140.08, "800": 140.3, "900": 140.91, "1000": 143.69, "1100": 147.14, "1200": 151.9}, "6500": {"600": 152.45, "700": 153.34, "800": 154.34, "900": 155.0, "1000": 155.67, "1100": 160.12, "1200": 165.28}, "7000": {"600": 163.12, "700": 163.81, "800": 165.14, "900": 165.84, "1000": 168.24, "1100": 173.4, "1200": 177.83}, "7500": {"600": 174.53, "700": 175.28, "800": 177.09, "900": 178.28, "1000": 180.04, "1100": 184.47, "1200": 191.4}, "8000": {"600": 176.64, "700": 184.04, "800": 185.95, "900": 188.16, "1000": 191.85, "1100": 197.75, "1200": 204.17}, "8500": {"600": 187.69, "700": 193.24, "800": 201.7, "900": 203.21, "1000": 207.19, "1100": 209.56, "1200": 217.27}, "9000": {"600": 199.32, "700": 203.02, "800": 212.13, "900": 217.02, "1000": 229.75, "1100": 235.27, "1200": 241.16}}, "125": {"1000": {"600": 62.85, "700": 63.11, "800": 63.36, "900": 63.62, "1000": 64.24, "1100": 65.36, "1200": 66.63}, "1500": {"600": 67.0, "700": 67.25, "800": 67.51, "900": 67.76, "1000": 68.38, "1100": 69.5, "1200": 70.76}, "2000": {"600": 71.14, "700": 71.39, "800": 71.64, "900": 72.59, "1000": 73.84, "1100": 75.09, "1200": 75.85}, "2500": {"600": 77.43, "700": 77.69, "800": 77.95, "900": 78.88, "1000": 80.15, "1100": 81.4, "1200": 82.15}, "3000": {"600": 81.32, "700": 81.57, "800": 81.84, "900": 82.96, "1000": 85.68, "1100": 87.3, "1200": 90.01}, "3500": {"600": 90.39, "700": 90.64, "800": 90.89, "900": 92.14, "1000": 92.72, "1100": 95.4, "1200": 97.29}, "4000": {"600": 99.55, "700": 99.81, "800": 100.06, "900": 100.57, "1000": 101.89, "1100": 103.83, "1200": 106.29}, "4500": {"600": 107.72, "700": 107.98, "800": 108.24, "900": 109.68, "1000": 110.98, "1100": 113.95, "1200": 116.92}, "5000": {"600": 123.94, "700": 124.19, "800": 124.45, "900": 125.4, "1000": 126.34, "1100": 129.92, "1200": 133.25}, "5500": {"600": 143.12, "700": 143.37, "800": 143.63, "900": 148.97, "1000": 150.36, "1100": 154.12, "1200": 156.63}, "6000": {"600": 160.84, "700": 161.09, "800": 161.35, "900": 162.04, "1000": 165.24, "1100": 169.21, "1200": 174.68}, "6500": {"600": 175.32, "700": 176.35, "800": 177.48, "900": 178.25, "1000": 179.01, "1100": 184.14, "1200": 190.07}, "7000": {"600": 187.58, "700": 188.38, "800": 189.91, "900": 190.72, "1000": 193.47, "1100": 199.41, "1200": 204.5}, "7500": {"600": 200.72, "700": 201.57, "800": 203.65, "900": 205.02, "1000": 207.05, "1100": 212.14, "1200": 220.12}, "8000": {"600": 203.14, "700": 211.65, "800": 213.84, "900": 216.38, "1000": 220.62, "1100": 227.42, "1200": 234.8}, "8500": {"600": 215.84, "700": 222.23, "800": 231.96, "900": 233.7, "1000": 238.27, "1100": 241.0, "1200": 249.86}, "9000": {"600": 229.22, "700": 233.48, "800": 243.96, "900": 244.68, "1000": 264.21, "1100": 270.56, "1200": 277.34}}}, "viga": {"95": {"1800": 22.61, "2200": 25.59, "2400": 27.08, "2700": 29.25, "3300": 33.79}, "125": {"1800": 25.65, "2200": 27.9, "2400": 29.15, "2700": 32.22, "3300": 36.83}, "150": {"1800": 28.63, "2200": 31.94, "2400": 33.57, "2700": 41.25, "3300": 44.54, "3600": 53.23, "3900": 57.11}}};
+
+// Helpers
+function formatEUR(value) { return new Intl.NumberFormat('pt-PT', { style:'currency', currency:'EUR' }).format(value); }
+
+// Tabs
+const tabButtons = document.querySelectorAll('.tab-btn');
+const panels = { bastidor: document.getElementById('panel-bastidor'), viga: document.getElementById('panel-viga') };
+tabButtons.forEach(btn => {
+  btn.addEventListener('click', () => {
+    const tab = btn.dataset.tab;
+    tabButtons.forEach(b => b.setAttribute('aria-selected', b===btn ? 'true' : 'false'));
+    for (const [k, el] of Object.entries(panels)) {
+      if (k === tab) { el.hidden = false; el.classList.add('fade-in'); }
+      else { el.hidden = true; el.classList.remove('fade-in'); }
+    }
+  });
+});
+
+// -------- Bastidor logic --------
+const perfilSel = document.getElementById('bastidor-perfil');
+const alturaSel = document.getElementById('bastidor-altura');
+const bastidorTBody = document.querySelector('#bastidor-tabela tbody');
+
+function populatePerfil() {
+  const perfis = Object.keys(DATA.bastidor).sort((a,b)=>Number(a)-Number(b));
+  perfilSel.innerHTML = perfis.map(p => `<option value="${p}">${p}</option>`).join('');
+  perfilSel.value = perfis[0] || "";
+}
+
+function populateAlturas() {
+  const perfil = perfilSel.value;
+  const alturas = Object.keys(DATA.bastidor[perfil]||{}).sort((a,b)=>Number(a)-Number(b));
+  alturaSel.innerHTML = alturas.map(a => `<option value="${a}">${a}</option>`).join('');
+  alturaSel.value = alturas[0] || "";
+}
+
+function renderBastidorTabela() {
+  const perfil = perfilSel.value;
+  const altura = alturaSel.value;
+  const mapa = (DATA.bastidor[perfil]||{})[altura] || {};
+  const rows = Object.entries(mapa).sort((a,b)=>Number(a[0])-Number(b[0]))
+    .map(([largura, preco]) => `<tr><td>${largura}</td><td>${formatEUR(preco)} </td></tr>`).join('');
+  bastidorTBody.innerHTML = rows || `<tr><td colspan="2" class="empty">Sem dados para esta combinação.</td></tr>`;
+}
+
+perfilSel.addEventListener('change', () => { populateAlturas(); renderBastidorTabela(); });
+alturaSel.addEventListener('change', renderBastidorTabela);
+
+// init bastidor
+populatePerfil();
+populateAlturas();
+renderBastidorTabela();
+
+// -------- Viga logic --------
+const vigaTipoSel = document.getElementById('viga-tipo');
+const vigaTBody = document.querySelector('#viga-tabela tbody');
+
+function populateVigaTipos() {
+  const tipos = Object.keys(DATA.viga).sort((a,b)=>Number(a)-Number(b));
+  vigaTipoSel.innerHTML = tipos.map(t => `<option value="${t}">${t}</option>`).join('');
+  vigaTipoSel.value = tipos[0] || "";
+}
+
+function renderVigaTabela() {
+  const tipo = vigaTipoSel.value;
+  const mapa = DATA.viga[tipo] || {};
+  const rows = Object.entries(mapa).sort((a,b)=>Number(a[0])-Number(b[0]))
+    .map(([comp, preco]) => `<tr><td>${comp}</td><td>${formatEUR(preco)}</td></tr>`).join('');
+  vigaTBody.innerHTML = rows || `<tr><td colspan="2" class="empty">Sem dados para este tipo.</td></tr>`;
+}
+
+vigaTipoSel.addEventListener('change', renderVigaTabela);
+
+// init vigas
+populateVigaTipos();
+renderVigaTabela();
+</script>
+</body>
+</html>
